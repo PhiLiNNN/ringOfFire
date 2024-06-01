@@ -40,21 +40,25 @@ export class GameComponent {
   }
 
   takeCard() {
-    if (!this.pickCardAnimation) {
-      this.currentCard = this.game.stack.pop() || '';
-      this.pickCardAnimation = true;
-    }
+    if (this.game.players.length !== 0) {
+      if (!this.pickCardAnimation) {
+        this.currentCard = this.game.stack.pop() || '';
+        this.pickCardAnimation = true;
+        this.game.currentPlayer++;
+        this.game.currentPlayer =
+          this.game.currentPlayer % this.game.players.length;
+      }
 
-    setTimeout(() => {
-      this.game.playedCard.push(this.currentCard);
-      this.pickCardAnimation = false;
-    }, 1000);
+      setTimeout(() => {
+        this.game.playedCard.push(this.currentCard);
+        this.pickCardAnimation = false;
+      }, 1000);
+    }
   }
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
-
     dialogRef.afterClosed().subscribe((name) => {
-      this.game.players.push(name);
+      if (name && name.length > 0) this.game.players.push(name);
     });
   }
 }

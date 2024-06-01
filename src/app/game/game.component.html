@@ -16,6 +16,7 @@
     />
     }
     <img
+      *ngIf="game.players.length >= 2"
       (click)="takeCard()"
       class="top-card"
       style="right: 25px"
