@@ -1,0 +1,20 @@
+@import "./../../mixin.scss";
+
+.player {
+  width: 300px;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  padding: 12px;
+  @include dflex($jc: start);
+  background: rgba(255, 166, 0, 0.419);
+  img {
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: 100%;
+  }
+  span {
+    font-size: 32px;
+    margin-left: 16px;
+  }
+}
