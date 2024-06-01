@@ -43,6 +43,13 @@
   right: 260px;
   bottom: 80px;
 }
+.pin-bottom {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+}
 @keyframes pick-card-animation {
   0% {
     transform: scale(1);
