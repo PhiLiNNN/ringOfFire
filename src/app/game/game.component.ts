@@ -11,14 +11,14 @@ import { GameInfoComponent } from '../game-info/game-info.component';
 import {
   Firestore,
   collection,
-  getDocs,
+  getDoc,
   doc,
   onSnapshot,
-  addDoc,
   updateDoc,
-  deleteDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { PlayerMobileComponent } from '../player-mobile/player-mobile.component';
 
 @Component({
   selector: 'app-game',
@@ -31,72 +31,80 @@ import { Observable } from 'rxjs';
     DialogAddPlayerComponent,
     MatDialogModule,
     GameInfoComponent,
+    PlayerMobileComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
 })
 export class GameComponent {
-  pickCardAnimation = false;
   game: Game = new Game();
-  currentCard: string = '';
   animal: string = '';
   name: string = '';
+  gameId: string = '';
 
-  // unsubGame;
   firestore: Firestore = inject(Firestore);
 
-  constructor(public dialog: MatDialog) {
-    // this.unsubGame = this.getGamesRef();
-    // this.fetchGames();
+  constructor(private route: ActivatedRoute, public dialog: MatDialog) {}
+
+  async updateGame() {
+    if (this.gameId) {
+      const docRef = this.getSingleDocRef('games', this.gameId);
+      await updateDoc(docRef, this.game.toJson()).catch((err) => {
+        console.error(err);
+      });
+    }
   }
-  getGamesRef() {
-    return collection(this.firestore, 'games');
-  }
-  // async fetchGames() {
-  //   const gamesRef = this.getGamesRef();
-  //   const gamesSnapshot = await getDocs(gamesRef);
-  //   const gamesList = gamesSnapshot.docs.map((doc) => doc.data());
-  //   console.log('Games:', gamesList);
-  // }
 
   ngOnInit() {
     this.newGame();
+    this.route.params.subscribe(async (params) => {
+      const gameDocRef = this.getSingleDocRef('games', params['id']);
+      this.gameId = params['id'];
+      const gameDocSnapshot = await getDoc(gameDocRef);
+      const gameData = gameDocSnapshot.data();
+      if (gameData) {
+        this.game.currentPlayer = gameData['currentPlayer'];
+        this.game.playedCard = gameData['playedCard'];
+        this.game.players = gameData['players'];
+        this.game.stack = gameData['stack'];
+        this.game.pickCardAnimation = gameData['pickCardAnimation'];
+        this.game.currentCard = gameData['currentCard'];
+      }
+    });
   }
 
-  async newGame() {
+  newGame() {
     this.game = new Game();
-    await this.addNote(this.game);
-  }
-  async addNote(item: {}) {
-    await addDoc(this.getGamesRef(), { hallo: 'ssss' })
-      .catch((err) => {
-        console.error(err);
-      })
-      .then((docRef) => {
-        console.log('Document written with ID: :>> ', docRef?.id);
-      });
   }
 
+  getSingleDocRef(colId: string, docId: string) {
+    return doc(collection(this.firestore, colId), docId);
+  }
   takeCard() {
     if (this.game.players.length !== 0) {
-      if (!this.pickCardAnimation) {
-        this.currentCard = this.game.stack.pop() || '';
-        this.pickCardAnimation = true;
+      if (!this.game.pickCardAnimation) {
+        this.game.currentCard = this.game.stack.pop() || '';
+        this.game.pickCardAnimation = true;
+
         this.game.currentPlayer++;
         this.game.currentPlayer =
           this.game.currentPlayer % this.game.players.length;
+        this.updateGame();
+        setTimeout(() => {
+          this.game.playedCard.push(this.game.currentCard);
+          this.game.pickCardAnimation = false;
+          this.updateGame();
+        }, 1000);
       }
-
-      setTimeout(() => {
-        this.game.playedCard.push(this.currentCard);
-        this.pickCardAnimation = false;
-      }, 1000);
     }
   }
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
     dialogRef.afterClosed().subscribe((name) => {
-      if (name && name.length > 0) this.game.players.push(name);
+      if (name && name.length > 0) {
+        this.game.players.push(name);
+        this.updateGame();
+      }
     });
   }
 }

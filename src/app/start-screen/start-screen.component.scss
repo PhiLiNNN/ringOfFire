@@ -9,6 +9,9 @@
   img {
     height: 100vh;
   }
+  @media (max-width: 1220px) {
+    overflow: hidden;
+  }
 }
 .start-label-box {
   position: absolute;
@@ -18,11 +21,14 @@
   @include dflex();
   img {
     cursor: pointer;
-    width: 60%;
-    height: 200px;
-    max-width: 700px;
+    width: 75%;
+    height: 300px;
+    max-width: 1000px;
     &:hover {
       filter: brightness(1.25);
+    }
+    @media (max-width: 800px) {
+      height: 200px;
     }
   }
 }

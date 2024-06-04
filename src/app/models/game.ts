@@ -3,6 +3,9 @@ export class Game {
   public stack: string[] = [];
   public playedCard: string[] = [];
   public currentPlayer: number = 0;
+  public pickCardAnimation: boolean = false;
+  public currentCard: string = '';
+
   constructor() {
     for (let index = 1; index < 14; index++) {
       this.stack.push('ace_' + index);
@@ -11,6 +14,17 @@ export class Game {
       this.stack.push('hearts_' + index);
     }
     shuffle(this.stack);
+  }
+
+  public toJson() {
+    return {
+      players: this.players,
+      stack: this.stack,
+      playedCard: this.playedCard,
+      currentPlayer: this.currentPlayer,
+      pickCardAnimation: this.pickCardAnimation,
+      currentCard: this.currentCard,
+    };
   }
 }
 

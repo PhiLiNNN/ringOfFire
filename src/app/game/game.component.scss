@@ -10,6 +10,13 @@
   background-size: 80% 100%;
   background-position: center;
   @include dflex();
+  @media (max-width: 1220px) {
+    background-size: 100% 100%;
+  }
+  @media (max-width: 900px) {
+    background-size: auto 100%; /* Die Höhe wird an den Container angepasst, die Breite bleibt unverändert */
+    background-position: center;
+  }
 }
 .card-stack {
   position: relative;
@@ -37,11 +44,33 @@
 }
 .player-position {
   position: absolute;
+  right: 0px;
+
+  z-index: 1;
 }
 .btn-add {
   position: absolute;
   right: 260px;
-  bottom: 80px;
+  bottom: 100px;
+  @media (max-width: 1110px) {
+    right: 48px;
+  }
+  @media (max-width: 900px) {
+    right: 16px;
+    bottom: 24px;
+  }
+}
+.scroll-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  display: flex;
+
+  overflow-x: auto;
+  app-player-mobile {
+    margin-left: 8px;
+  }
 }
 .pin-bottom {
   position: absolute;
@@ -49,7 +78,14 @@
   left: 50%;
   transform: translateX(-50%);
   width: 60%;
+
+  @media (max-width: 900px) {
+    width: 100%;
+    right: 0px;
+    bottom: 0px;
+  }
 }
+
 @keyframes pick-card-animation {
   0% {
     transform: scale(1);
